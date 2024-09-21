@@ -26,7 +26,9 @@
 
 主要需要看下面的图
 
-<img src="README.assets/image-20240921132650615.png" alt="image-20240921132650615" style="zoom:50%;" />
+
+![image](https://github.com/BlokCAT/Implementation-of-refraction-and-transmission-in-soft-ray-tracing-based-on-path-tracing/blob/main/image-20240921132650615.png?raw=true)
+
 
 最终的目的是计算出`Color(light_in)`的颜色,而这个颜色来源是反射颜色`Color(reflect)`和折射颜色`Color(refract_light)`的加权和，只需要用菲尼尔效应计算出各自的占比就行了，
 
