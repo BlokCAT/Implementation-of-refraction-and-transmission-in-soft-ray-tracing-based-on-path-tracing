@@ -12,7 +12,7 @@
 
 上图：
 
-<img src="C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240921115856798.png" alt="image-20240921115856798" style="zoom:67%;" />
+![image](https://github.com/BlokCAT/Implementation-of-refraction-and-transmission-in-soft-ray-tracing-based-on-path-tracing/blob/main/1.png?raw=true)
 
 其中有聚焦效果，说明实现没有问题：
 
