@@ -12,11 +12,15 @@
 
 上图：
 
+
 ![image](https://github.com/BlokCAT/Implementation-of-refraction-and-transmission-in-soft-ray-tracing-based-on-path-tracing/blob/main/1.png?raw=true)
+
 
 其中有聚焦效果，说明实现没有问题：
 
-![image-20240921120641537](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240921120641537.png)
+
+![image](https://github.com/BlokCAT/Implementation-of-refraction-and-transmission-in-soft-ray-tracing-based-on-path-tracing/blob/main/image-20240921120641537.png?raw=true)
+
 
 ## 原理详细介绍
 
