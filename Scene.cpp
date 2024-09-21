@@ -6,19 +6,7 @@
 
 void Scene::BuildAccl()
 {
-	switch (method)
-	{
-	case NO:
-		return;
-		break;
-	case BVH:
-		this->bvh.objects = objs;
-		this->bvh.BuiltBVH(1);
-		std::cout << "BVH¹¹½¨Íê±Ï£¡\n";
-		break;
-	default:
-		break;
-	}
+
 }
 
 void Scene::sampleLight(HitPoint &hp, float &pdf) 
@@ -46,7 +34,7 @@ void Scene::FindHit( Ray &ray ,  HitPoint &hp)
 		return;
 		break;
 	case BVH:
-		bvh.getHitposition(ray , hp);
+		
 		break;
 	default:
 		break;
@@ -74,7 +62,7 @@ Vector3f Scene::PathTracing( Ray &ray, int depth)
 	if (!hit_to_scene.happened) return Vector3f(0);
 	if (hit_to_scene.m->islight) return hit_to_scene.m->lightIntensity;
 
-	//È¡³öËùÓĞ¹âÏßÔÚ³¡¾°µÄµÚÒ»¸ö½»µãµÄĞÅÏ¢
+	//å–å‡ºæ‰€æœ‰å…‰çº¿åœ¨åœºæ™¯çš„ç¬¬ä¸€ä¸ªäº¤ç‚¹çš„ä¿¡æ¯
 	Vector3f hit_pos = hit_to_scene.hitcoord;
 	Vector3f N = hit_to_scene.hitN.normalized();
 	Material * mat = hit_to_scene.m;
@@ -84,70 +72,10 @@ Vector3f Scene::PathTracing( Ray &ray, int depth)
 	{
 	case REFLC:
 	{
-		//¼ÆËã¼ä½Ó¹âÕÕ
-		float gs = RandomFloat();
-		if (gs < RussianRoulette)
-		{
-			Vector3f futureDir = mat->GetFutureDir(wi, N);
-			Ray newRay(hit_pos, futureDir);
-			HitPoint test;
-			FindHit(newRay, test);
-			if (test.happened )
-			{
-				Vector3f brdf_ = mat->GetBRDF(wi, futureDir, N);
-				float costheta3 = dotProduct(futureDir, N);
-				float pdf_ = mat->pdf(wi, futureDir, N);
-				if ( pdf_ > 0.0001)
-					L_indir = PathTracing(newRay, depth + 1) * brdf_ * costheta3 / pdf_ / RussianRoulette;
-			}
-		}
-		break;
 	}
 	case MIRCO:
 	case DIFFUSE:
 	{
-		//Ö±½Ó¹âÕÕ£¬Ëæ»ú²ÉÑù¹âÔ´
-		float pdf_L = 0;
-		HitPoint sample_light;
-		Scene::sampleLight(sample_light, pdf_L);
-
-		Vector3f sample_hit = sample_light.hitcoord;
-		Vector3f sampleRayDir = (sample_hit - hit_pos).normalized();
-		float d = (hit_pos - sample_hit).len();
-
-		Ray sampleRay(hit_pos, sampleRayDir);
-		HitPoint hit_to_sample;
-
-		Scene::FindHit(sampleRay, hit_to_sample);
-
-		if (hit_to_sample.happened && hit_to_sample.m->islight)
-		{
-			Vector3f L_i = hit_to_sample.m->lightIntensity;
-			Vector3f brdf1 = mat->GetBRDF(wi, sampleRayDir, N);
-			float cos_theta1 = clamp(0.0,1.0, dotProduct(N, sampleRayDir));
-			float cos_theta2 = clamp(0.0, 1.0, dotProduct(hit_to_sample.hitN, sampleRayDir * -1));
-			if (pdf_L > 0.0001)
-				L_dir = (L_i * brdf1 * cos_theta1 * cos_theta2 / (d * d)) / pdf_L;
-		}
-
-		//¼ÆËã¼ä½Ó¹âÕÕ
-		float gs = RandomFloat();
-		if (gs < RussianRoulette)
-		{
-			
-			Vector3f futureDir = mat->GetFutureDir(wi, N);
-			Ray newRay(hit_pos, futureDir);
-			HitPoint test;
-			Scene::FindHit(newRay, test);
-			if (test.happened && !test.m->islight)
-			{
-				Vector3f brdf_ = mat->GetBRDF(wi, futureDir, N);
-				float costheta3 = clamp(0.0, 1.0, dotProduct(futureDir, N));
-				float pdf_ = mat->pdf(wi, futureDir, N);
-				L_indir = PathTracing(newRay, depth + 1) * brdf_ * costheta3 / pdf_ / RussianRoulette;
-			}
-		}
-		break;
 	}
 	case REFRACT:
 	{
@@ -158,7 +86,7 @@ Vector3f Scene::PathTracing( Ray &ray, int depth)
 			float K = 0.0;
 			mat->fresnel(wi, N, mat->ior, K);
 
-			//¼ÆËãÕÛÉäÑÕÉ«
+			//è®¡ç®—æŠ˜å°„é¢œè‰²
 			Vector3f futureDir1 = mat->refract(wi, N , mat->ior);
 			Ray newRay1(hit_pos - (N * 0.001), futureDir1);
 			HitPoint test1;
@@ -167,7 +95,7 @@ Vector3f Scene::PathTracing( Ray &ray, int depth)
 	
 			if (test1.happened)
 			{
-				//È¡³öËùÓĞ¹âÏßÔÚ³öÈ¥µÄµãµÄĞÅÏ¢
+				//å–å‡ºæ‰€æœ‰å…‰çº¿åœ¨å‡ºå»çš„ç‚¹çš„ä¿¡æ¯
 				Vector3f hitpos = test1.hitcoord;
 				Vector3f nn = test1.hitN.normalized();
 				Material* mt = test1.m;
@@ -175,7 +103,7 @@ Vector3f Scene::PathTracing( Ray &ray, int depth)
 				Vector3f futureOutDir = mt->refract(new_wi, nn, mt->ior);
 
 				if (!(!futureOutDir.x && !futureOutDir.y && !futureOutDir.z)) {
-					//ÕÛÉäºóÉä³öÈ¥µÄ¹âÏß
+					//æŠ˜å°„åå°„å‡ºå»çš„å…‰çº¿
 	
 					Ray outRay(hitpos + (nn * 0.001), futureOutDir);
 					HitPoint Obj_rfract_hit;
@@ -193,7 +121,7 @@ Vector3f Scene::PathTracing( Ray &ray, int depth)
 			
 			}
 			
-			//¼ÆËãÕÛÉäÌå±íÃæ·´ÉäµÄÑÕÉ«
+			//è®¡ç®—æŠ˜å°„ä½“è¡¨é¢åå°„çš„é¢œè‰²
 			Vector3f futureDir2 = mat->GetFutureDir(wi, N);
 			Ray newRay2(hit_pos, futureDir2);
 			HitPoint test2;
